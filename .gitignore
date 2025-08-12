@@ -51,6 +51,9 @@ Module.symvers
 Mkfile.old
 dkms.conf
 .vscode
-
+.dep
+.obj
+libft_malloc_x86_64*.so
+*.so
 # debug information files
 *.dwo
