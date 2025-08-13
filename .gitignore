@@ -55,5 +55,6 @@ dkms.conf
 .obj
 libft_malloc_x86_64*.so
 *.so
+vgcor*.*
 # debug information files
 *.dwo

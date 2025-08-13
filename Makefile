@@ -40,12 +40,16 @@ TOTAL_FILES = $(words $(SOURCES))
 DIRECTORY_OBJ = .obj
 DIRECTORY_DEP = .dep
 DIRECTORY_SRC = src
+DIRECTORY_TEST = test
 
 SUB_DIRECTORIES = free malloc realloc
 SOURCES = \
 	free/free.c \
 	malloc/malloc.c \
 	realloc/realloc.c
+
+SOURCES_TEST = \
+	tests/main.c
 
 INCLUDES = $(addprefix -I, ./include)
 OBJECTS = $(addprefix $(DIRECTORY_OBJ)/, $(SOURCES:.c=.o))
@@ -69,6 +73,10 @@ $(DIRECTORY_OBJ)/%.o:$(DIRECTORY_SRC)/%.c Makefile
 
 symlink: $(LIBNAME)
 	ln -sf $(LIBNAME) $(SYMLINK)
+
+test: all
+	@printf "$(LIGTH)Compiling Tests$(BLUE)$(END)\n"
+	@$(CC) $(CFLAGS) -g $(LIBNAME) $(SOURCES_TEST) $(INCLUDES) -o $@
 
 dir:
 	@for DIR in $(DIRS_TO_CREATE); do \
@@ -108,6 +116,7 @@ clean:
 
 fclean: clean
 	@$(RMV) $(LIBNAME)
+	@$(RMV) test
 	echo "✅ ==== $(PURPLE)$(LIGTH)$(NAME) executable files and name cleaned!$(END) ==== ✅"
 
 -include $(DEPENDENCIES)
