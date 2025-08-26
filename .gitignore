@@ -53,6 +53,7 @@ dkms.conf
 .vscode
 .dep
 .obj
+.bin
 libft_malloc_x86_64*.so
 *.so
 *.text

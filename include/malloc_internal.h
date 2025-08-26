@@ -6,7 +6,7 @@
 /*   By: dacortes <dacortes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/12 16:30:59 by codespace         #+#    #+#             */
-/*   Updated: 2025/08/26 13:32:10 by dacortes         ###   ########.fr       */
+/*   Updated: 2025/08/26 19:15:41 by dacortes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,8 +77,13 @@ static inline size_t align_up(size_t num){ return (num + (MALLOC_ALIGNMENT - 1))
 
 typedef	struct s_block_meta	t_block_meta;
 
+#ifndef META_SIZE
+	#define META_SIZE sizeof(t_block_meta)
+#endif
 
-#define META_SIZE sizeof(t_block_meta)
+#ifndef SIZE_MAX_MMAP
+	#define SIZE_MAX_MMAP (unsigned long long)((void *)-1)
+#endif
 
 struct s_block_meta
 {

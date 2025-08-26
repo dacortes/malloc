@@ -32,7 +32,7 @@ LIBNAME = libft_malloc_$(HOSTTYPE).so
 SYMLINK = libft_malloc.so
 
 RMV = rm -rf
-CC = gcc
+CC = cc
 CFLAGS = -Wall -Wextra -Werror -fPIC
 LDFLAGS = -shared #-pthread
 TOTAL_FILES = $(words $(SOURCES))
@@ -40,7 +40,7 @@ TOTAL_FILES = $(words $(SOURCES))
 DIRECTORY_OBJ = .obj
 DIRECTORY_DEP = .dep
 DIRECTORY_SRC = src
-DIRECTORY_TEST = test
+
 
 SUB_DIRECTORIES = free malloc realloc
 SOURCES = \
@@ -49,13 +49,13 @@ SOURCES = \
 	realloc/realloc.c \
 	handle_mem.c
 
-SOURCES_TEST = \
-	tests/main.c
-
 INCLUDES = $(addprefix -I, ./include)
 OBJECTS = $(addprefix $(DIRECTORY_OBJ)/, $(SOURCES:.c=.o))
 DEPENDENCIES = $(addprefix $(DIRECTORY_DEP)/, $(SOURCES:.c=.d))
 DIRS_TO_CREATE = $(DIRECTORY_OBJ) $(DIRECTORY_DEP)
+
+DIRECTORY_TEST = tests
+BIN_TESTS = $(DIRECTORY_TEST)/.bin
 
 ################################################################################
 #                               MAKE RULES                                     #
@@ -75,9 +75,13 @@ $(DIRECTORY_OBJ)/%.o:$(DIRECTORY_SRC)/%.c Makefile
 symlink: $(LIBNAME)
 	ln -sf $(LIBNAME) $(SYMLINK)
 
-test: all
-	@printf "$(LIGTH)Compiling Tests$(BLUE)$(END)\n"
-	@$(CC) $(CFLAGS) -g $(SOURCES_TEST) $(INCLUDES) -L. $(LIBNAME) -o $@ -Wl,-rpath=.
+test: all dir
+	@printf "$(LIGTH)Compiling $@ $(BLUE)$(END)\n"
+	@$(CC) $(CFLAGS) -g tests/my.c $(INCLUDES) -L. $(LIBNAME) -o $(BIN_TESTS)/$@ -Wl,-rpath=.
+
+original: dir
+	@printf "$(LIGTH)Compiling $@ $(BLUE)$(END)\n"
+	@$(CC) $(CFLAGS) -g tests/original.c -o $(BIN_TESTS)/$@
 
 dir:
 	@for DIR in $(DIRS_TO_CREATE); do \
@@ -89,6 +93,15 @@ dir:
 			printf "$(BLUE)$(LIGTH)Directory already exists:$(END) $$DIR\n"; \
 		fi \
 	done
+
+dirTest:
+	@if [ ! -d $(BIN_TESTS) ]; then \
+		mkdir -p $(BIN_TESTS); \
+		printf "$(BLUE)$(LIGTH)Creating directory:$(END) $(BIN_TESTS)\n"; \
+	else \
+		printf "$(BLUE)$(LIGTH)Directory already exists:$(END) $(BIN_TESTS)\n"; \
+	fi \
+
 
 define progress
 	@$(eval COMPILED_FILES=$(shell expr $(COMPILED_FILES) + 1))
@@ -103,7 +116,6 @@ define progress
 	printf "$(END)$(ligth)] "; \
 	printf "%d%%$(END)" $$((100 * $(COMPILED_FILES) / $(TOTAL_FILES)));'
 endef
-
 clean:
 	@for DIR in $(DIRS_TO_CREATE); do \
 		if [ -d $$DIR ]; then \
@@ -113,6 +125,12 @@ clean:
 			printf "$(LIGTH)The directory does not exist:$(END) $$DIR\n"; \
 		fi \
 	done
+	@if [ -d $(BIN_TESTS) ]; then \
+		$(RMV) $(BIN_TESTS); \
+		printf "$(BLUE)$(LIGTH)Directory$(END) $(BIN_TESTS) $(BLUE)$(LIGTH)removed$(END)\n"; \
+	else \
+		printf "$(LIGTH)The directory does not exist:$(END) $(BIN_TESTS)\n"; \
+	fi
 	echo "✅ ==== $(PURPLE)$(LIGTH)$(NAME) object files cleaned!$(END) ==== ✅"
 
 fclean: clean
@@ -122,5 +140,5 @@ fclean: clean
 
 -include $(DEPENDENCIES)
 re: fclean all
-.PHONY: all symlink dir progress clean fclean
+.PHONY: all symlink dir progress test original dirTest clean fclean
 .SILENT:
