@@ -103,31 +103,34 @@ void print_bits(unsigned int num) {
     printf("\n");
 }
 
-int main(void) {
-	printf("alignof(char) %lu\n", __alignof__(char));
-	printf("alignof(long double) %lu\n", __alignof__(long double));
-	printf("MALLOC_ALIGNMENT %lu\n", MALLOC_ALIGNMENT);
-	printf("--->%lu\n", SYSTEM_SIZE);
+// int main(void) {
+// 	printf("alignof(char) %lu\n", __alignof__(char));
+// 	printf("alignof(long double) %lu\n", __alignof__(long double));
+// 	printf("MALLOC_ALIGNMENT %lu\n", MALLOC_ALIGNMENT);
+// 	printf("--->%lu\n", SYSTEM_SIZE);
 
-	char	*ptr = MEMORY_PAGE;
-	if (ptr == MAP_FAILED)
-		return (dprintf(2, "Error al inicializar el mmao\n"), EXIT_FAILURE);
-	for (size_t iter = 0; iter < SYSTEM_SIZE; iter++)
-		ptr[iter] = '0';
-	dprintf(1, "[PTR] -> %s size the pointer %lu\n", ptr, strlen(ptr));
-	if (munmap(ptr, SYSTEM_SIZE) == ERROR)
-		return dprintf(2, "Error en limpiar la memoria\ns");
+// 	char	*ptr = MEMORY_PAGE;
+// 	if (ptr == MAP_FAILED)
+// 		return (dprintf(2, "Error al inicializar el mmao\n"), EXIT_FAILURE);
+// 	for (size_t iter = 0; iter < SYSTEM_SIZE; iter++)
+// 		ptr[iter] = '0';
+// 	dprintf(1, "[PTR] -> %s size the pointer %lu\n", ptr, strlen(ptr));
+// 	if (munmap(ptr, SYSTEM_SIZE) == ERROR)
+// 		return dprintf(2, "Error en limpiar la memoria\ns");
 
-	size_t foo = 10;
+// 	size_t foo = 10;
 
-	foo |= INUSE_FLAG;
-	printf("| foo %lu\n", foo);
-	print_bits(foo);
-	foo &= ~INUSE_FLAG;
-	printf("& foo %lu\n", foo);
-	print_bits(foo);
-	print_bits(INUSE_FLAG);
-	dprintf(1, "foo=%lu  comparator or (%ld)\n", foo, (foo | (size_t)11));
-	return (0);
+// 	foo |= INUSE_FLAG;
+// 	printf("| foo %lu\n", foo);
+// 	print_bits(foo);
+// 	foo &= ~INUSE_FLAG;
+// 	printf("& foo %lu\n", foo);
+// 	print_bits(foo);
+// 	print_bits(INUSE_FLAG);
+// 	dprintf(1, "foo=%lu  comparator or (%ld)\n", foo, (foo | (size_t)11));
+// 	return (0);
+// }
+
+
+int	main(void) {
 }
-

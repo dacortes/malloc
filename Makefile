@@ -46,7 +46,8 @@ SUB_DIRECTORIES = free malloc realloc
 SOURCES = \
 	free/free.c \
 	malloc/malloc.c \
-	realloc/realloc.c
+	realloc/realloc.c \
+	handle_mem.c
 
 SOURCES_TEST = \
 	tests/main.c
@@ -76,7 +77,7 @@ symlink: $(LIBNAME)
 
 test: all
 	@printf "$(LIGTH)Compiling Tests$(BLUE)$(END)\n"
-	@$(CC) $(CFLAGS) -g $(LIBNAME) $(SOURCES_TEST) $(INCLUDES) -o $@
+	@$(CC) $(CFLAGS) -g $(SOURCES_TEST) $(INCLUDES) -L. $(LIBNAME) -o $@ -Wl,-rpath=.
 
 dir:
 	@for DIR in $(DIRS_TO_CREATE); do \
