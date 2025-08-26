@@ -6,7 +6,7 @@
 /*   By: dacortes <dacortes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 20:53:19 by dacortes          #+#    #+#             */
-/*   Updated: 2025/08/26 21:21:46 by dacortes         ###   ########.fr       */
+/*   Updated: 2025/08/26 23:59:30 by dacortes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,6 @@ void coalesce() {
 	}
 }
 
-#include <stdio.h>
 void free(void *ptr) {
 	if (!ptr)
 		return;

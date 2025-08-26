@@ -6,7 +6,7 @@
 /*   By: dacortes <dacortes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/12 16:30:59 by codespace         #+#    #+#             */
-/*   Updated: 2025/08/26 19:15:41 by dacortes         ###   ########.fr       */
+/*   Updated: 2025/08/27 00:01:05 by dacortes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,6 +95,9 @@ struct s_block_meta
 extern	t_block_meta	*g_meta;
 
 t_block_meta    *find_free_block(size_t size, t_block_meta **last);
-void    split_block(size_t size, t_block_meta *block);
+void			split_block(size_t size, t_block_meta *block);
 t_block_meta	*get_last_block(void);
 t_block_meta	*request_meta(size_t size);
+
+void			*malloc(size_t size);
+void			free(void *ptr);

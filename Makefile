@@ -56,10 +56,23 @@ DIRS_TO_CREATE = $(DIRECTORY_OBJ) $(DIRECTORY_DEP)
 
 DIRECTORY_TEST = tests
 BIN_TESTS = $(DIRECTORY_TEST)/.bin
+TEST_DIRECTORY_OBJ = $(DIRECTORY_TEST)/.obj
+TEST_DIRECTORY_DEP = $(DIRECTORY_TEST)/.dep
+TEST_INCLUDES = $(addprefix -I, $(DIRECTORY_TEST)/include) $(INCLUDES)
+
+TEST_SOURCES_MY = my.c
+TEST_SOURCES_ORIG = original.c
+
+TEST_OBJECTS_MY = $(addprefix $(TEST_DIRECTORY_OBJ)/, $(TEST_SOURCES_MY:.c=.o))
+TEST_OBJECTS_ORIG = $(addprefix $(TEST_DIRECTORY_OBJ)/, $(TEST_SOURCES_ORIG:.c=.o))
+TEST_DEPENDENCIES_MY = $(addprefix $(TEST_DIRECTORY_DEP)/, $(TEST_SOURCES_MY:.c=.d))
+TEST_DEPENDENCIES_ORIG = $(addprefix $(TEST_DIRECTORY_DEP)/, $(TEST_SOURCES_ORIG:.c=.d))
+TEST_DIRS_TO_CREATE = $(TEST_DIRECTORY_OBJ) $(TEST_DIRECTORY_DEP)
 
 ################################################################################
 #                               MAKE RULES                                     #
 ################################################################################
+
 
 all: dir $(LIBNAME)
 
@@ -75,13 +88,21 @@ $(DIRECTORY_OBJ)/%.o:$(DIRECTORY_SRC)/%.c Makefile
 symlink: $(LIBNAME)
 	ln -sf $(LIBNAME) $(SYMLINK)
 
-test: all dir
+test: all dir dirTest $(TEST_OBJECTS_MY)
 	@printf "$(LIGTH)Compiling $@ $(BLUE)$(END)\n"
-	@$(CC) $(CFLAGS) -g tests/my.c $(INCLUDES) -L. $(LIBNAME) -o $(BIN_TESTS)/$@ -Wl,-rpath=.
+	@$(CC) $(CFLAGS) -g $(TEST_OBJECTS_MY) $(TEST_INCLUDES) -L. $(LIBNAME) -o $(BIN_TESTS)/$@ -Wl,-rpath=.
 
-original: dir
+$(TEST_DIRECTORY_OBJ)/%.o:$(DIRECTORY_TEST)/%.c
+	@printf "  $(LIGTH)Compiling Objects my malloc test$(BLUE)$<$(END)      "
+	@$(CC) $(CFLAGS) $(TEST_INCLUDES) -MMD -MF $(TEST_DIRECTORY_DEP)/$*.d -c $< -o $@
+
+original: dir dirTest $(TEST_OBJECTS_ORIG)
 	@printf "$(LIGTH)Compiling $@ $(BLUE)$(END)\n"
-	@$(CC) $(CFLAGS) -g tests/original.c -o $(BIN_TESTS)/$@
+	@$(CC) $(CFLAGS) -g $(TEST_OBJECTS_ORIG) -o $(BIN_TESTS)/$@
+
+$(TEST_DIRECTORY_OBJ)/%.o:$(DIRECTORY_TEST)/%c
+	@printf "  $(LIGTH)Compiling Objects original test$(BLUE)$<$(END)      "
+	@$(CC) $(CFLAGS) $(TEST_INCLUDES) -MMD -MF $(TEST_DIRECTORY_DEP)/$*.d -c $< -o $@
 
 dir:
 	@for DIR in $(DIRS_TO_CREATE); do \
@@ -95,6 +116,14 @@ dir:
 	done
 
 dirTest:
+	@for DIR in $(TEST_DIRS_TO_CREATE); do \
+		if [ ! -d $$DIR ]; then \
+			mkdir -p $$DIR; \
+			printf "$(BLUE)$(LIGTH)Creating directory:$(END) $$DIR\n"; \
+		else \
+			printf "$(BLUE)$(LIGTH)Directory already exists:$(END) $$DIR\n"; \
+		fi \
+	done
 	@if [ ! -d $(BIN_TESTS) ]; then \
 		mkdir -p $(BIN_TESTS); \
 		printf "$(BLUE)$(LIGTH)Creating directory:$(END) $(BIN_TESTS)\n"; \
@@ -125,6 +154,14 @@ clean:
 			printf "$(LIGTH)The directory does not exist:$(END) $$DIR\n"; \
 		fi \
 	done
+	@for DIR in $(TEST_DIRS_TO_CREATE); do \
+		if [ -d $$DIR ]; then \
+			$(RMV) $$DIR; \
+			printf "$(BLUE)$(LIGTH)Directory$(END) $$DIR $(BLUE)$(LIGTH)removed$(END)\n"; \
+		else \
+			printf "$(LIGTH)The directory does not exist:$(END) $$DIR\n"; \
+		fi \
+	done
 	@if [ -d $(BIN_TESTS) ]; then \
 		$(RMV) $(BIN_TESTS); \
 		printf "$(BLUE)$(LIGTH)Directory$(END) $(BIN_TESTS) $(BLUE)$(LIGTH)removed$(END)\n"; \
@@ -139,6 +176,8 @@ fclean: clean
 	echo "✅ ==== $(PURPLE)$(LIGTH)$(NAME) executable files and name cleaned!$(END) ==== ✅"
 
 -include $(DEPENDENCIES)
+-include $(TEST_DEPENDENCIES_MY)
+-include $(TEST_DEPENDENCIES_ORIG)
 re: fclean all
 .PHONY: all symlink dir progress test original dirTest clean fclean
 .SILENT:
